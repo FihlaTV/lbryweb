@@ -1,0 +1,52 @@
+version: '3.2'
+
+services:
+  db:
+    image: postgres:9.6-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: ")UiCMCiWRcee9Yg"
+      POSTGRES_USER: lbryweb
+  daemon_test_local:
+    image: sayplastic/lbrynet:latest
+    ports:
+      - "5479:5279"
+    volumes:
+      - type: bind
+        source: ./.daemon_test_local_storage
+        target: /storage
+  daemon_test:
+    image: sayplastic/lbrynet:latest
+    ports:
+      - "5379:5279"
+  daemon:
+    image: sayplastic/lbrynet:latest
+    ports:
+      - "5279:5279"
+    volumes:
+      - type: volume
+        source: storage
+        target: /storage
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - daemon
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_USER: lbryweb
+    volumes:
+      - ./lbryweb:/app/lbryweb
+      - type: volume
+        source: storage
+        target: /storage
+        volume:
+          nocopy: true
+
+volumes:
+  storage:

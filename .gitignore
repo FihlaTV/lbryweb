@@ -1,0 +1,7 @@
+.pytest_cache
+*.sqlite3
+.vscode
+.coverage
+coverage.*
+htmlcov
+/.*storage

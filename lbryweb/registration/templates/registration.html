@@ -1,0 +1,9 @@
+<html>
+    <body>
+        <form action="{% url "registration" %}" method="post">
+            {% csrf_token %}
+            {{ form.as_ul }}
+            <input type="submit">
+        </form>
+    </body>
+</html>

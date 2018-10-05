@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+requests = "*"
+psycopg2-binary = "*"
+django-extensions = "*"
+
+[dev-packages]
+pylint = "*"
+pytest = "*"
+pytest-django = "*"
+responses = "*"
+ipython = "*"
+ipdb = "*"
+
+[requires]
+python_version = "3.7"
