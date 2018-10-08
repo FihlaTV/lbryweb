@@ -24,8 +24,8 @@ class RegistrationView(FormView):
             email=form.cleaned_data['email']
         )
         user.set_password(form.cleaned_data['password1'])
+        user.save()
         account = Account(user=user)
         account.register()
-        user.save()
         login(self.request, user)
         return super().form_valid(form)

@@ -49,5 +49,10 @@ class RegistrationViewTest(TestCase):
         self.assertTrue(user.is_bound)
         account = Account(user=user)
         self.assertEqual(account.get_details()['id'], user.account_id)
+        self.client.logout()
+        response = self.client.post(reverse('login'), {'username': 'test@lbry.io', 'password': 'qwerty'})
+        self.assertEqual(response.status_code, 302)
+        user = auth.get_user(self.client)
+        self.assertTrue(user.is_authenticated)
         # Cleanup
         account.unregister()
