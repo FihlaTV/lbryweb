@@ -1,6 +1,7 @@
 import os
-from pathlib import Path
 import logging
+import mimetypes
+from pathlib import Path
 
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
@@ -16,13 +17,23 @@ class Content(models.Model):
     file_name = models.CharField(max_length=1000)
     uri = models.CharField(max_length=1000)
     claim_name = models.CharField(max_length=1000)
+    outpoint = models.CharField(max_length=1000)
     lbrynet_data = JSONField()
 
-    def get_file(self):
+    def get_physical_file(self):
         logger.debug(
             'Making Path object for %s + %s',
             settings.LBRY_DOWNLOAD_DIRECTORY,
             self.file_name)
-        print(settings.LBRY_DOWNLOAD_DIRECTORY)
-        print(self.file_name)
         return Path(os.path.join(settings.LBRY_DOWNLOAD_DIRECTORY, self.file_name))
+
+    def get_suggested_file_name(self):
+        return self.lbrynet_data['suggested_file_name']
+
+    def get_mime_type(self):
+        guessed_type = mimetypes.guess_type(self.get_suggested_file_name())[0]
+        if not guessed_type:
+            logger.warn('Unable to guess file MIME type from "%s" filename', self.file_name)
+            return 'application/octet-stream'
+        else:
+            return guessed_type

@@ -23,6 +23,7 @@ def create_content_object(sender, account_id, uri, lbrynet_data, file_name, **kw
         return
     Content.objects.create(
         downloaded_by=user,
-        claim_name=lbrynet_data['claim_name'], uri=uri, file_name=file_name,
-        lbrynet_data=lbrynet_data
+        claim_name=lbrynet_data['claim_name'], uri=uri,
+        outpoint=lbrynet_data['outpoint'],
+        file_name=file_name, lbrynet_data=lbrynet_data
     )

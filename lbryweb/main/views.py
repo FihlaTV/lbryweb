@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.views.generic import TemplateView
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponseBadRequest
@@ -6,23 +7,32 @@ from django.http import HttpResponseForbidden, JsonResponse, HttpResponseBadRequ
 from daemon import api
 
 
+logger = logging.getLogger(__name__)
+
+
 class MainView(TemplateView):
     template_name = 'main.html'
+
+
+class APIProxyView(TemplateView):
+    template_name = 'app.html'
 
     def post(self, request, *args, **kwargs):
         """
         A view for proxying web app requests to internal daemon instance
         """
-        if not request.user.is_authenticated:
-            return HttpResponseForbidden()
-        assert request.user.is_bound
         try:
             parsed_data = json.loads(request.body)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as exc:
+            logger.error('Exception while decoding client json: %s', exc)
             return HttpResponseBadRequest('Malformed JSON')
-        api_client = api.API(account_id=request.user.account_id)
+        if request.user.is_authenticated:
+            api_client = api.API(account_id=request.user.account_id)
+        else:
+            api_client = api.API()
         try:
             response, _ = api_client.proxy(parsed_data)
         except Exception as exc:
+            logger.error('Exception while proxying request (%s): %s', parsed_data, exc)
             return HttpResponseBadRequest(f'Proxy exception: {exc}')
         return JsonResponse(response)

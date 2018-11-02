@@ -8,25 +8,13 @@ services:
     environment:
       POSTGRES_PASSWORD: ")UiCMCiWRcee9Yg"
       POSTGRES_USER: lbryweb
-  daemon_test_local:
-    image: sayplastic/lbrynet:latest
+  daemon:
+    image: sayplastic/lbrynet:0.30.1rc1
     ports:
       - "5479:5279"
     volumes:
       - type: bind
         source: ./.daemon_test_local_storage
-        target: /storage
-  daemon_test:
-    image: sayplastic/lbrynet:latest
-    ports:
-      - "5379:5279"
-  daemon:
-    image: sayplastic/lbrynet:latest
-    ports:
-      - "5279:5279"
-    volumes:
-      - type: volume
-        source: storage
         target: /storage
   app:
     build:
@@ -40,6 +28,7 @@ services:
     environment:
       POSTGRES_HOST: db
       POSTGRES_USER: lbryweb
+      LBRY_DAEMON: http://daemon:5479/
     volumes:
       - ./lbryweb:/app/lbryweb
       - type: volume

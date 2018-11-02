@@ -4,3 +4,7 @@ class DaemonException(Exception):
 
 class AccountNotFound(DaemonException):
     pass
+
+
+class AccountMissing(DaemonException):
+    pass

@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'main.middleware.LbrynetAccountMiddleware'
 ]
 
 ROOT_URLCONF = 'lbryweb.urls'
@@ -131,6 +132,49 @@ STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'users.User'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(message)s'  # noqa
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'formatter': 'verbose',
+            'filename': 'debug.log',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'daemon.api': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'storage.views': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
+    },
+}
+
 # Default: for running code on your host machine and access daemon_test_local container from docker-compose
 LBRY_DAEMON = os.getenv('LBRY_DAEMON', 'http://localhost:5479/')
 # Default: shared dir for daemon_test_local
@@ -138,4 +182,4 @@ LBRY_DOWNLOAD_DIRECTORY = os.getenv(
     'LBRY_DOWNLOAD_DIRECTORY',
     os.path.join(BASE_DIR, '../.daemon_test_local_storage/download')
 )
-LBRY_CONTENT_URL = 'http://localhost:8000/storage/'
+LBRY_CONTENT_URL = 'http://localhost:8000/storage/content/'

@@ -19,4 +19,5 @@ class SignalHandlersTest(TestCase):
         instance = Content.objects.get(lbrynet_data__claim_name=response['result']['claim_name'])
         self.assertEqual(instance.downloaded_by, user)
         self.assertEqual(instance.uri, uri)
-        self.assertTrue(instance.get_file().is_file())
+        self.assertTrue(instance.get_physical_file().is_file())
+        self.assertEqual(instance.outpoint, response['result']['outpoint'])
