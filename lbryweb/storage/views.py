@@ -2,7 +2,7 @@ import logging
 
 from django.views import View
 from django.shortcuts import get_object_or_404
-from django.http import StreamingHttpResponse, Http404
+from django.http import StreamingHttpResponse, Http404, HttpResponse
 
 from . import file_utils
 from .models import Content
@@ -22,19 +22,24 @@ class ContentView(View):
         # if not request.user.is_authenticated:
         #     raise Http404()
         content_instance = self.get_instance(request, **kwargs)
-        lbrynet_file_size = content_instance.lbrynet_data['total_bytes']
-        file_size = content_instance.get_physical_file().stat().st_size
-        if lbrynet_file_size != file_size:
+        file_size = content_instance.lbrynet_data['total_bytes']
+        real_file_size = content_instance.get_physical_file().stat().st_size
+        if real_file_size != file_size:
             log.warning(
                 'File mismatch: %s - %s (%s bytes difference)',
-                lbrynet_file_size, file_size, lbrynet_file_size - file_size
+                file_size, real_file_size, file_size - real_file_size
             )
-        file_size = lbrynet_file_size
         file_handle = content_instance.get_physical_file().open(mode='rb')
         file_type = content_instance.get_mime_type()
         first_byte, last_byte = file_utils.parse_range_header(
             request.META.get('HTTP_RANGE', ''), file_size)
+        log.info(
+            'Requested range %s-%s out of %s (%s on disk)',
+            first_byte, last_byte, file_size, real_file_size
+        )
         if first_byte is not None:
+            if first_byte > real_file_size:
+                return HttpResponse('', status=416)
             response = StreamingHttpResponse(
                 file_utils.RangeFileWrapper(file_handle, offset=first_byte, length=file_size),
                 status=206, content_type=file_type

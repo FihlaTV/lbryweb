@@ -28,11 +28,12 @@ services:
     environment:
       POSTGRES_HOST: db
       POSTGRES_USER: lbryweb
-      LBRY_DAEMON: http://daemon:5479/
+      LBRY_DAEMON: http://daemon:5279/
+      LBRY_DOWNLOAD_DIRECTORY: /storage/download
     volumes:
       - ./lbryweb:/app/lbryweb
-      - type: volume
-        source: storage
+      - type: bind
+        source: ./.daemon_test_local_storage
         target: /storage
         volume:
           nocopy: true

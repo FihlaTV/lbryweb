@@ -12,7 +12,7 @@ WORKDIR /app
 RUN pip3 install -U pipenv
 ADD Pipfile /app/
 ADD Pipfile.lock /app/
-RUN pipenv install 
+RUN pipenv install
 RUN pipenv install --dev
 
 RUN apk --purge del .build-deps

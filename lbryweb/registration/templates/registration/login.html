@@ -1,10 +1,11 @@
-<html>
-    <body>
-        <form action="{% url 'login' %}" method="post">
-            {% csrf_token %}
-            {{ form.as_ul }}
-            <input type="hidden" name="next" value="{% url 'main' %}">
-            <input type="submit">
-        </form>
-    </body>
-</html>
+{% extends "base.html" %}
+
+{% block meat %}
+<h2>Login</h2>
+<form action="{% url 'login' %}" method="post" style="width: 50%">
+    {% csrf_token %}
+    {{ form.as_ul }}
+    <input type="hidden" name="next" value="{% url 'main' %}">
+    <input type="submit">
+</form>
+{% endblock %}

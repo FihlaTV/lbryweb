@@ -1,12 +1,12 @@
-<html>
-  <body>
-    {% if request.user.is_authenticated %}
-    <h1>Hello {{ request.user.username }}!</h1>
-    <p>You are registered with lbry network and your account_id is {{ request.user.account_id }}.</p>
-    <p><a href="{% url 'logout' %}?next=/">Logout</a></p>
-    {% else %}
-    <h1>Hello!</h1>
-    <p>Please <a href="{% url 'login' %}">login</a> or <a href="{% url 'registration' %}">register</a>.</p>
-    {% endif %}
-  </body>
-</html>
+{% extends "base.html" %}
+
+{% block meat %}
+{% if request.user.is_authenticated %}
+<h2>Hello {{ request.user.username }}!</h2>
+<p>You are registered with LBRY Web and your account_id is <strong>{{ request.user.account_id }}</strong>.</p>
+<p><a href="{% url 'logout' %}?next=/">Logout</a></p>
+{% else %}
+<h2>Hello!</h2>
+<p>Please <a href="{% url 'login' %}">login</a> or <a href="{% url 'registration' %}">register</a>.</p>
+{% endif %}
+{% endblock %}
