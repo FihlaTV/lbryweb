@@ -53,7 +53,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'main.middleware.LbrynetAccountMiddleware'
+    'main.middleware.LbrynetAccountMiddleware',
+    'main.middleware.AccountIdCookieMiddleware'
 ]
 
 ROOT_URLCONF = 'lbryweb.urls'

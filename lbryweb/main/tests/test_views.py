@@ -16,11 +16,14 @@ class MainViewTest(TestCase):
         valid_data = {'email': 'test@lbry.io', 'password1': 'qwerty', 'password2': 'qwerty'}
         self.client.post(reverse('registration'), valid_data)
         response = self.client.get(reverse('main'))
-        account = Account(user=User.objects.get(username='test@lbry.io'))
+        user = User.objects.get(username='test@lbry.io')
+        account = Account(user=user)
         content = response.content.decode('utf-8')
         self.assertIn(account.get_details()['id'], content)
         self.assertIn('test@lbry.io', content)
         self.assertIn(reverse('logout'), content)
+        self.assertIn('lbrynet_account_id', self.client.cookies, 'Lbrynet account ID cookie was not set')
+        self.assertEqual(self.client.cookies['lbrynet_account_id'].value, user.account_id)
         # Cleanup
         account.unregister()
 
