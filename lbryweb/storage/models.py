@@ -17,7 +17,7 @@ class Content(models.Model):
     file_name = models.CharField(max_length=1000)
     uri = models.CharField(max_length=1000)
     claim_name = models.CharField(max_length=1000)
-    outpoint = models.CharField(max_length=1000)
+    outpoint = models.CharField(max_length=1000, unique=True)
     lbrynet_data = JSONField()
 
     def get_physical_file(self):

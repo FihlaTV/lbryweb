@@ -18,12 +18,18 @@ def create_content_object(sender, account_id, uri, lbrynet_data, file_name, **kw
     )
     try:
         user = User.objects.get(account_id=account_id)
+        content_instance = Content.objects.get(
+            outpoint=lbrynet_data['outpoint']
+        )
     except User.DoesNotExist:
         logger.error('User with account_id=%s not found, not saving Content object', account_id)
         return
-    Content.objects.create(
-        downloaded_by=user,
-        claim_name=lbrynet_data['claim_name'], uri=uri,
-        outpoint=lbrynet_data['outpoint'],
-        file_name=file_name, lbrynet_data=lbrynet_data
-    )
+    except Content.DoesNotExist:
+        content_instance = Content(
+            outpoint=lbrynet_data['outpoint'],
+            downloaded_by=user,
+            claim_name=lbrynet_data['claim_name'],
+            uri=uri, file_name=file_name,
+        )
+    content_instance.lbrynet_data = lbrynet_data
+    content_instance.save()

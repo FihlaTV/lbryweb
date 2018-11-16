@@ -42,6 +42,14 @@ class StorageViewTest(TestCase):
             str(content_instance.lbrynet_data['total_bytes'])
         )
 
+        # Repeated queries do not produce duplicate Content instances
+        response = self.client.post(reverse('api_proxy'), query, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            Content.objects.filter(outpoint=content_instance.outpoint).count(),
+            1
+        )
+
     def test_get_by_outpoint(self):
         uri = 'what'
         query = {'method' :'get', 'params': {'uri': uri}}

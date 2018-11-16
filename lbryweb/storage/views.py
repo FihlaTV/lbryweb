@@ -19,8 +19,8 @@ class ContentView(View):
             Content.objects.all(), uri=kwargs['uri'])
 
     def get(self, request, *args, **kwargs):
-        # if not request.user.is_authenticated:
-        #     raise Http404()
+        if not request.user.is_authenticated:
+            raise Http404()
         content_instance = self.get_instance(request, **kwargs)
         file_size = content_instance.lbrynet_data['total_bytes']
         real_file_size = content_instance.get_physical_file().stat().st_size
