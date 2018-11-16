@@ -16,8 +16,6 @@ RUN pipenv install
 RUN pipenv install --dev
 
 RUN apk --purge del .build-deps
-# RUN pipenv shell
 
-# ADD ./lbryweb /app/lbryweb
 WORKDIR /app/lbryweb
 CMD ["pipenv", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]

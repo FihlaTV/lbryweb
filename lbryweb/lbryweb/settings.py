@@ -136,20 +136,24 @@ AUTH_USER_MODEL = 'users.User'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'root': {
+        'level': 'WARNING'
+    },
     'formatters': {
         'verbose': {
             'format': '%(levelname)s %(asctime)s %(module)s %(message)s'  # noqa
         },
         'simple': {
-            'format': '%(levelname)s %(message)s'
+            'format': '%(levelname)s %(asctime)s %(message)s'
         },
     },
     'handlers': {
-        'file': {
+        'timber': {
             'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'formatter': 'verbose',
-            'filename': 'debug.log',
+            'class': 'timber.TimberHandler',
+            'formatter': 'simple',
+            'api_key': '6515_9a5e7c6c749b569e:187934f2a0c1a8f2ec7674d079874b81744a1d8e8650103379d7d1a7751f8d11',
+            'raise_exceptions': True
         },
         'console': {
             'level': 'DEBUG',
@@ -164,7 +168,7 @@ LOGGING = {
             'propagate': True,
         },
         'daemon.api': {
-            'handlers': ['file'],
+            'handlers': ['timber'],
             'level': 'DEBUG',
             'propagate': True,
         },
@@ -175,6 +179,16 @@ LOGGING = {
         }
     },
 }
+
+STATIC_ROOT = os.path.join(BASE_DIR, '../static/')
+
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+sentry_sdk.init(
+    dsn="https://4cec5c27f13a4205842306a8415e7f45@sentry.io/1324446",
+    integrations=[DjangoIntegration()]
+)
 
 # Default: for running code on your host machine and access daemon_test_local container from docker-compose
 LBRY_DAEMON = os.getenv('LBRY_DAEMON', 'http://localhost:5479/')
