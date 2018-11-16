@@ -6,3 +6,4 @@ coverage.*
 htmlcov
 /.*storage
 bundle.js
+/static
