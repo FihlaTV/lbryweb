@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -182,13 +183,16 @@ LOGGING = {
 
 STATIC_ROOT = os.path.join(BASE_DIR, '../static/')
 
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
+if 'test' in ' '.join(sys.argv):
+    del LOGGING['handlers']['timber']
+else:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
 
-sentry_sdk.init(
-    dsn="https://4cec5c27f13a4205842306a8415e7f45@sentry.io/1324446",
-    integrations=[DjangoIntegration()]
-)
+    sentry_sdk.init(
+        dsn="https://4cec5c27f13a4205842306a8415e7f45@sentry.io/1324446",
+        integrations=[DjangoIntegration()]
+    )
 
 # Default: for running code on your host machine and access daemon_test_local container from docker-compose
 LBRY_DAEMON = os.getenv('LBRY_DAEMON', 'http://localhost:5479/')

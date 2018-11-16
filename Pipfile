@@ -10,7 +10,6 @@ psycopg2-binary = "*"
 django-extensions = "*"
 raven = "*"
 timber = "*"
-ipython = "*"
 sentry-sdk = "*"
 
 [dev-packages]
