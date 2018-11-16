@@ -3,7 +3,8 @@
 {% block meat %}
 {% if request.user.is_authenticated %}
 <h2>Hello {{ request.user.username }}!</h2>
-<p>You are registered with LBRY Web and your account_id is <strong>{{ request.user.account_id }}</strong>.</p>
+<p>You are registered with LBRY Web. <a href="{% url 'api_proxy' %}">Go try the app!</a></p>
+<p>Your account_id is <strong>{{ request.user.account_id }}</strong>.</p>
 <p><a href="{% url 'logout' %}?next=/">Logout</a></p>
 {% else %}
 <h2>Hello!</h2>

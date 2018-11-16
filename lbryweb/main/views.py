@@ -2,6 +2,7 @@ import json
 import logging
 
 from django.views.generic import TemplateView
+from django.shortcuts import redirect
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponseBadRequest
 
 from daemon import api
@@ -16,6 +17,11 @@ class MainView(TemplateView):
 
 class APIProxyView(TemplateView):
     template_name = 'app.html'
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or not request.user.is_bound:
+            return redirect('/')
+        return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         """
