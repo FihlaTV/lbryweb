@@ -185,6 +185,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, '../static/')
 
 if 'test' in ' '.join(sys.argv):
     del LOGGING['handlers']['timber']
+    LOGGING['loggers']['daemon.api']['handlers'] = ['console']
 else:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
