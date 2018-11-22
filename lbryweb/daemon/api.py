@@ -1,6 +1,7 @@
 import logging
 import hashlib
 import copy
+import re
 
 import requests
 from django.conf import settings
@@ -9,6 +10,9 @@ from . import exceptions, signals
 
 
 logger = logging.getLogger(__name__)
+
+
+ACCOUNT_SPECIFIC_METHODS = re.compile(r'^(wallet)|(account)|(address)|(transaction)_.+')
 
 
 class API:
@@ -52,11 +56,8 @@ class API:
         return response_result
 
     def proxy(self, request):
-        logger.debug('Proxying request to lbrynet: %s(%s)', request['method'], request.get('params', ''))
-
         request_processors = {
-            'get': self._augment_get_request,
-            'account_balance': self._augment_account_balance_request
+            'get': self._augment_get_request
         }
         response_processors = {
             'get': self._augment_get_response,
@@ -69,6 +70,14 @@ class API:
         request_processor = request_processors.get(request['method'], self._augment_any_request)
         augmented_request = request_processor(copy.deepcopy(request))
 
+        if augmented_request == request:
+            logger.debug(
+                'Proxying request to lbrynet: %s(%s)',
+                request['method'], request.get('params', ''))
+        else:
+            logger.debug(
+                'Proxying request to lbrynet: %s(%s) -> (%s)',
+                request['method'], request.get('params', ''), augmented_request.get('params', ''))
         response = requests.post(self.url, json=augmented_request)
         response_data = self._extract_response_data(response)
         logger.debug(
@@ -91,6 +100,9 @@ class API:
     ### Requests
 
     def _augment_any_request(self, request):
+        method = request['method']
+        if ACCOUNT_SPECIFIC_METHODS.match(method):
+            request = self._attach_account_id(request)
         return request
 
     def _augment_get_request(self, request):
@@ -103,9 +115,9 @@ class API:
         # request['params']['file_name'] = f'{self.account_id}___{uri}___{file_hash}'
         return request
 
-    def _augment_account_balance_request(self, request):
+    def _attach_account_id(self, request):
         self.validate_account()
-        request['params'] = {'account_id': self.account_id}
+        request.setdefault('params', {})['account_id'] = self.account_id
         return request
 
     ### Responses

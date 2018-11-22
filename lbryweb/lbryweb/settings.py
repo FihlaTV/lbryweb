@@ -149,6 +149,11 @@ LOGGING = {
         },
     },
     'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+        },
         'timber': {
             'level': 'DEBUG',
             'class': 'timber.TimberHandler',
@@ -169,7 +174,7 @@ LOGGING = {
             'propagate': True,
         },
         'daemon.api': {
-            'handlers': ['timber'],
+            'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,
         },
@@ -184,7 +189,6 @@ LOGGING = {
 STATIC_ROOT = os.path.join(BASE_DIR, '../static/')
 
 if 'test' in ' '.join(sys.argv):
-    del LOGGING['handlers']['timber']
     LOGGING['loggers']['daemon.api']['handlers'] = ['console']
 else:
     import sentry_sdk

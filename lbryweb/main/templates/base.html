@@ -1,14 +1,35 @@
-<html>
+{% load static %}<html>
   <head>
       <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
       <link rel="stylesheet" href="//cdn.rawgit.com/necolas/normalize.css/master/normalize.css">
       <link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
       <style>
         body { padding: 3em }
+        form li { list-style: none }
+        .button-large {
+          font-size: 1.4rem;
+          height: 4.5rem;
+          line-height: 4.5rem;
+          padding: 0 2rem;
+        }
+        a {
+          color: #155b4a;
+        }
+        .button, input[type='button'], input[type='reset'], input[type='submit'] {
+          color: white;
+          background-color: #155b4a;
+          border-color: #155b4a;
+        }
+        input[type='email']:focus, input[type='number']:focus, input[type='password']:focus, input[type='search']:focus, input[type='tel']:focus, input[type='text']:focus, input[type='url']:focus, input[type='color']:focus, input[type='date']:focus, input[type='month']:focus, input[type='week']:focus, input[type='datetime']:focus, input[type='datetime-local']:focus, input:not([type]):focus, textarea:focus, select:focus {
+          border-color: #155b4a;
+        }
+        .primary-logo img {
+          height: 48px;
+        }
       </style>
   </head>
   <body>
-    <h1><a href="/">LBRY Web Prototype</a></h1>
+    <div class="primary-logo"><h4><a href="/"><img src="{% static 'main/lbry-dark.svg' %}"> <sup>web</sup></a></h4></div>
     {% block meat %}{% endblock %}
   </body>
 </html>
