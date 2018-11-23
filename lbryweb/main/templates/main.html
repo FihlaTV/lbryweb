@@ -4,7 +4,7 @@
 {% if request.user.is_authenticated %}
 <h3>Hello {{ request.user.username }}!</h3>
 <p>You are registered with LBRY Web, your account_id is <strong>{{ request.user.account_id }}</strong>.</p>
-<p><a class="button button-large" href="{% url 'api_proxy' %}">Open the app</a></p>
+<p><a class="button button-large" href="{% url 'app' %}">Open the app</a></p>
 <p><a href="{% url 'logout' %}?next=/">Logout</a></p>
 {% else %}
 <h2>Hello!</h2>
