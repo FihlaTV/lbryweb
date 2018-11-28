@@ -12,7 +12,9 @@ from . import exceptions, signals
 logger = logging.getLogger(__name__)
 
 
-ACCOUNT_SPECIFIC_METHODS = re.compile(r'^(wallet)|(account)|(address)|(transaction)_.+')
+ACCOUNT_SPECIFIC_METHODS = re.compile(
+    r'^((wallet)|(account)|(address)|(transaction)_.+)|(status)$'
+)
 
 
 class API:
