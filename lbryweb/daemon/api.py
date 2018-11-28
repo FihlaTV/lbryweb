@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 ACCOUNT_SPECIFIC_METHODS = re.compile(
-    r'^((wallet)|(account)|(address)|(transaction)_.+)|(status)$'
+    r'^(wallet)|(account)|(address)|(transaction)_.+$'
 )
 
 
