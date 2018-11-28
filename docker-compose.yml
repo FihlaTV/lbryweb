@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ")UiCMCiWRcee9Yg"
       POSTGRES_USER: lbryweb
   daemon:
-    image: sayplastic/lbrynet:0.30.1rc1
+    image: sayplastic/lbrynet:latest
     ports:
       - "5479:5279"
     volumes:
