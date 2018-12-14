@@ -1,3 +1,3 @@
-.PHONY: build_app
-build_app:
-	scripts/build_app.sh
+.PHONY: js
+js:
+	scripts/build_js.sh

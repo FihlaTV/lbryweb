@@ -18,7 +18,7 @@ fi
 (
     cd $LBRY_DESKTOP_REPO
     echo "Building the app in $LBRY_DESKTOP_REPO..."
-    webpack
+    webpack --mode development
 )
 
 rm "$PROJECT_PATH/lbryweb/main/static/main/app/"*
