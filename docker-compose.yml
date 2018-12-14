@@ -30,6 +30,7 @@ services:
       POSTGRES_USER: lbryweb
       LBRY_DAEMON: http://daemon:5279/
       LBRY_DOWNLOAD_DIRECTORY: /storage/download
+      LBRY_PUBLISH_DIRECTORY: /storage/publish
     volumes:
       - ./lbryweb:/app/lbryweb
       - type: bind

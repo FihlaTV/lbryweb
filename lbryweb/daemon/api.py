@@ -31,7 +31,7 @@ class API:
 
     def __init__(self, account_id=None):
         """
-        Supply account_id if you need to `proxy` requests,
+        Supply account_id if you need to perform `proxy` and `publish` requests,
         omit it if only internal `call`s will be performed.
         """
         self.account_id = account_id
@@ -50,12 +50,27 @@ class API:
                 raise exceptions.DaemonException(error['message'])
         return json
 
-    def call(self, method, **kwargs):
+    def call(self, method, get_result=True, **kwargs):
         logger.debug('Sending request to lbrynet: %s(%s)', method, kwargs)
         response = requests.post(self.url, json={'method': method, 'params': kwargs})
-        response_result = self._extract_response_data(response)['result']
-        logger.debug('Got response from lbrynet: [%s] %s', response.status_code, response_result)
+        if get_result:
+            response_result = self._extract_response_data(response)['result']
+            logger.debug(
+                'Got response from lbrynet: [%s] %s',
+                response.status_code,
+                response_result)
+        else:
+            response_result = self._extract_response_data(response)
+            logger.debug(
+                'Got response from lbrynet: [%s] %s',
+                response.status_code,
+                response_result['result'])
         return response_result
+
+    def publish(self, file_path, client_payload):
+        client_payload['params']['file_path'] = file_path
+        daemon_response = self.call('publish', get_result=False, **client_payload)
+        return daemon_response
 
     def proxy(self, request):
         request_processors = {
