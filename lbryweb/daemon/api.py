@@ -7,6 +7,7 @@ import requests
 from django.conf import settings
 
 from . import exceptions, signals
+from .profiling import Profiler
 
 
 logger = logging.getLogger(__name__)
@@ -35,15 +36,17 @@ class API:
         omit it if only internal `call`s will be performed.
         """
         self.account_id = account_id
+        self.profiler = Profiler()
 
     def validate_account(self):
         if not self.account_id:
             raise exceptions.AccountMissing('Account ID is required for this type of request')
 
-    def _extract_response_data(self, response):
+    def _extract_response_data(self, method, response):
         json = response.json()
         error = json.get('error')
         if error:
+            self.profiler.error(method)
             if "Couldn't find account" in error['message']:
                 raise exceptions.AccountNotFound
             else:
@@ -52,19 +55,21 @@ class API:
 
     def call(self, method, get_result=True, **kwargs):
         logger.debug('Sending request to lbrynet: %s(%s)', method, kwargs)
+        self.profiler.start(method)
         response = requests.post(self.url, json={'method': method, 'params': kwargs})
         if get_result:
-            response_result = self._extract_response_data(response)['result']
+            response_result = self._extract_response_data(method, response)['result']
             logger.debug(
                 'Got response from lbrynet: [%s] %s',
                 response.status_code,
                 response_result)
         else:
-            response_result = self._extract_response_data(response)
+            response_result = self._extract_response_data(method, response)
             logger.debug(
                 'Got response from lbrynet: [%s] %s',
                 response.status_code,
                 response_result['result'])
+        self.profiler.end(method)
         return response_result
 
     def publish(self, file_path, client_payload):
@@ -84,6 +89,7 @@ class API:
             'get': self._post_get_response
         }
 
+        self.profiler.start(request['method'])
         request_processor = request_processors.get(request['method'], self._augment_any_request)
         augmented_request = request_processor(copy.deepcopy(request))
 
@@ -96,7 +102,7 @@ class API:
                 'Proxying request to lbrynet: %s(%s) -> (%s)',
                 request['method'], request.get('params', ''), augmented_request.get('params', ''))
         response = requests.post(self.url, json=augmented_request)
-        response_data = self._extract_response_data(response)
+        response_data = self._extract_response_data(request['method'], response)
         logger.debug(
             'Got response from lbrynet for proxied request: [%s] %s',
             response.status_code, response_data)
@@ -110,6 +116,7 @@ class API:
                 request=request, augmented_request=augmented_request,
                 response=response_data, augmented_response=augmented_response)
 
+        self.profiler.end(request['method'])
         logger.debug(
             'Returning augmented for proxied request: %s', augmented_response)
         return augmented_response, response_data

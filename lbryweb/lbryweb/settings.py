@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'registration.apps.RegistrationConfig',
     'storage.apps.StorageConfig',
-    'main.apps.MainConfig'
+    'main.apps.MainConfig',
+    'daemon.apps.DaemonConfig',
 ]
 
 MIDDLEWARE = [
@@ -154,6 +155,12 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': 'debug.log',
         },
+        'daemon_profiling_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'daemon_profiling.log',
+            'formatter': 'simple',
+        },
         'timber': {
             'level': 'DEBUG',
             'class': 'timber.TimberHandler',
@@ -176,6 +183,11 @@ LOGGING = {
         'daemon.api': {
             'handlers': ['file'],
             'level': 'DEBUG',
+            'propagate': True,
+        },
+        'daemon.profiling': {
+            'handlers': ['daemon_profiling_file', 'console'],
+            # 'level': 'DEBUG',
             'propagate': True,
         },
         'storage.views': {
