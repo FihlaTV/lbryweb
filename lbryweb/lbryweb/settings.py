@@ -154,6 +154,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': 'debug.log',
+            'formatter': 'simple',
         },
         'daemon_profiling_file': {
             'level': 'DEBUG',
@@ -216,10 +217,14 @@ LBRY_DAEMON = os.getenv('LBRY_DAEMON', 'http://localhost:5479/')
 # Default: shared dir for daemon_test_local
 LBRY_DOWNLOAD_DIRECTORY = os.getenv(
     'LBRY_DOWNLOAD_DIRECTORY',
-    os.path.join(BASE_DIR, '../.daemon_test_local_storage/download')
+    os.path.normpath(os.path.join(BASE_DIR, '../.daemon_test_local_storage/download'))
 )
-LBRY_PUBLISH_DIRECTORY = os.getenv(
-    'LBRY_PUBLISH_DIRECTORY',
-    os.path.join(BASE_DIR, '../.daemon_test_local_storage/publish')
+LBRY_PUBLISH_SAVE = os.getenv(
+    'LBRY_PUBLISH_SAVE',
+    os.path.normpath(os.path.join(BASE_DIR, '../.daemon_test_local_storage/publish'))
+)
+LBRY_PUBLISH_FEED = os.getenv(
+    'LBRY_PUBLISH_FEED',
+    '/storage/publish'
 )
 LBRY_CONTENT_URL = os.getenv('LBRY_CONTENT_URL', 'http://localhost:8000/storage/content/')

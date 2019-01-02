@@ -82,19 +82,30 @@ class ContentPublishView(View):
             return HttpResponseForbidden()
         api_client = API(request.user.account_id)
         storage = FileSystemStorage(location=os.path.join(
-            settings.LBRY_PUBLISH_DIRECTORY, f'account_{request.user.account_id}'))
+            settings.LBRY_PUBLISH_SAVE, f'account_{request.user.account_id}'))
         try:
             uploaded_file = request.FILES[self.file_field]
             filename_hash_bits = ':'.join([
                 request.user.account_id,
-                str(datetime.now().timestamp()),
                 settings.SECRET_KEY,
                 uploaded_file.name
-            ])
+            ]).encode('utf-8')
             final_filename = hashlib.sha1(filename_hash_bits).hexdigest() + '_' + uploaded_file.name
-            file_path = storage.save(final_filename, uploaded_file)
+            storage.save(final_filename, uploaded_file)
+            saved_file_path = storage.path(final_filename)
+            logger.debug(
+                'Saving uploaded file %s to %s',
+                uploaded_file.name, saved_file_path)
+            # This is for running lbryweb outside of Docker
+            # because we don't see the same file paths
+            feed_file_path = os.path.join(
+                settings.LBRY_PUBLISH_FEED,
+                f'account_{request.user.account_id}',
+                final_filename
+            )
             client_payload = json.loads(request.POST[self.json_payload_field])
-            return JsonResponse(api_client.publish(file_path, client_payload))
+            response = api_client.publish(feed_file_path, client_payload)
+            return JsonResponse(response)
         except KeyError as exc:
             logger.error('Exception while parsing request: %s', exc)
             return HttpResponseBadRequest(f'Proxy exception: {exc}')

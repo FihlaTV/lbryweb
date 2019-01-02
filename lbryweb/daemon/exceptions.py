@@ -1,7 +1,7 @@
 class DaemonException(Exception):
 
     def __str__(self):
-        return self.__class__.__name__
+        return '{}: {}'.format(self.__class__.__name__, super().__str__())
 
 
 class AccountNotFound(DaemonException):

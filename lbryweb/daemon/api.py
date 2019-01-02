@@ -74,7 +74,7 @@ class API:
 
     def publish(self, file_path, client_payload):
         client_payload['params']['file_path'] = file_path
-        daemon_response = self.call('publish', get_result=False, **client_payload)
+        daemon_response = self.call('publish', get_result=False, account_id=self.account_id, **client_payload['params'])
         return daemon_response
 
     def proxy(self, request):

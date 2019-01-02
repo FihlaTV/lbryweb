@@ -19,6 +19,7 @@ pytest-django = "*"
 responses = "*"
 ipython = "*"
 ipdb = "*"
+"autopep8" = "*"
 
 [requires]
 python_version = "3.7"

@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.decorators.csrf import csrf_exempt
 
 from . import views
 
@@ -6,7 +7,7 @@ from . import views
 urlpatterns = [
     path(
         'content/',
-        views.ContentPublishView.as_view(),
+        csrf_exempt(views.ContentPublishView.as_view()),
         name='publish'),
     path('content/<account_id>/<uri>', views.ContentView.as_view(), name='content'),
     path(

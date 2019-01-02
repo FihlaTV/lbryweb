@@ -17,11 +17,12 @@ services:
         source: ./.daemon_test_local_storage
         target: /storage
   app:
+    # image: sayplastic/lbryweb-prototype
     build:
       context: ./
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "80:80"
     depends_on:
       - db
       - daemon
@@ -30,9 +31,10 @@ services:
       POSTGRES_USER: lbryweb
       LBRY_DAEMON: http://daemon:5279/
       LBRY_DOWNLOAD_DIRECTORY: /storage/download
-      LBRY_PUBLISH_DIRECTORY: /storage/publish
+      LBRY_PUBLISH_SAVE: /storage/publish
+      LBRY_PUBLISH_FEED: /storage/publish
     volumes:
-      - ./lbryweb:/app/lbryweb
+    #   - ./lbryweb:/app/lbryweb
       - type: bind
         source: ./.daemon_test_local_storage
         target: /storage

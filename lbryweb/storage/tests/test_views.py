@@ -2,7 +2,7 @@ import time
 import json
 import hashlib
 import os
-from io import StringIO
+from io import BytesIO
 from datetime import datetime
 
 import pytest
@@ -193,6 +193,7 @@ class StorageViewTest(TestCase):
 
 
 class PublishViewTest(TestCase):
+    maxDiff = None
 
     def test_post(self):
         user = User.objects.create(username='test@lbry.io')
@@ -200,59 +201,56 @@ class PublishViewTest(TestCase):
         account.register()
         self.client.force_login(user)
 
-        with responses.RequestsMock() as rsps:
-            rsps.add(
+        with responses.RequestsMock() as responses_mock:
+            responses_mock.add(
                 responses.POST, API.url,
                 body=DAEMON_PUBLISH_RESPONSE, status=200, content_type='application/json')
 
-            faux_file = StringIO()
-            faux_file.write("He's just a poor boy from a poor family\n")
-            faux_file.seek(0, 0)
+            faux_file = BytesIO(b'He\'s just a poor boy from a poor family')
+            faux_file.name = 'publishing_test.txt'
             data = {
                 'file': faux_file,
                 'json_payload': """{
                     "jsonrpc": "2.0",
                     "method": "publish",
                     "params": {
-                        "name": "hello2",
+                        "name": "DSC0097squarejpg",
                         "channel_id": "",
-                        "bid": 0.1,
+                        "bid": "0.10000000",
                         "metadata": {
-                            "title": "test",
+                            "title": "lwt1331",
                             "nsfw": false,
                             "license": "None",
                             "licenseUrl": "",
                             "language": "en",
-                            "thumbnail": "",
-                            "description": "hello **world**"
-                        }
+                            "thumbnail": ""
+                        },
+                        "file_path": "__POST_FILE__"
                     },
-                    "id": 1543922089251
+                    "id": 1545152100250
                 }"""
             }
-            response = self.client.post(
-                reverse('publish'), data,
-                CONTENT_DISPOSITION='form-data; name="file"; filename="publishing_test.txt"'
-            )
-            daemon_request_payload = json.loads(rsps.calls[0].request.body)
+            response = self.client.post(reverse('publish'), data)
+            self.assertEqual(response.status_code, 200, response.content)
+            daemon_request_payload = json.loads(responses_mock.calls[0].request.body)
 
-            filename_hash_bits = ':'.join(
+            self.assertEqual(daemon_request_payload['params']['account_id'], user.account_id)
+            filename_hash_bits = ':'.join([
                 user.account_id,
-                str(datetime.now().timestamp()),
                 settings.SECRET_KEY,
                 'publishing_test.txt'
-            )
+            ]).encode('utf-8')
             filename = hashlib.sha1(filename_hash_bits).hexdigest() + '_' + 'publishing_test.txt'
             self.assertEqual(
                 daemon_request_payload['params']['file_path'],
                 os.path.join(
-                    settings.LBRY_PUBLISH_DIRECTORY,
+                    settings.LBRY_PUBLISH_FEED,
                     'account_' + str(user.account_id),
                     filename),
             )
             self.assertEqual(response.status_code, 200)
             response_data = json.loads(response.content)
-            self.assertEqual(response_data.content, json.loads(DAEMON_PUBLISH_RESPONSE))
+            self.assertEqual(response_data, json.loads(DAEMON_PUBLISH_RESPONSE))
 
 
 DAEMON_PUBLISH_RESPONSE = """
