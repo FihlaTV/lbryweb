@@ -94,8 +94,7 @@ class ContentPublishView(View):
             storage.save(final_filename, uploaded_file)
             saved_file_path = storage.path(final_filename)
             logger.debug(
-                'Saving uploaded file %s to %s',
-                uploaded_file.name, saved_file_path)
+                'Saving uploaded file %s to %s', uploaded_file.name, saved_file_path)
             # This is for running lbryweb outside of Docker
             # because we don't see the same file paths
             feed_file_path = os.path.join(
