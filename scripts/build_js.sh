@@ -16,9 +16,10 @@ if [ ! -d "$LBRY_DESKTOP_REPO" ]; then
 fi
 
 (
+    PATH="$PATH:./node_modules/.bin"
     cd $LBRY_DESKTOP_REPO
     echo "Building the app in $LBRY_DESKTOP_REPO..."
-    webpack --mode development
+    webpack #--mode development
 )
 
 rm "$PROJECT_PATH/lbryweb/main/static/main/app/"*
